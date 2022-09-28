@@ -26,7 +26,14 @@
 
 /* Private typedef -----------------------------------------------------------*/
 /* USER CODE BEGIN PTD */
-
+typedef struct
+{
+	enum
+	{
+		RED, YELLOW, GREEN
+	} state;
+	int timeLeft;
+} TrafficLED;
 /* USER CODE END PTD */
 
 /* Private define ------------------------------------------------------------*/
@@ -53,7 +60,77 @@ static void MX_GPIO_Init(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
+/**
+ * @brief  Turn the LED1 to RED
+ */
+void turnRed1(TrafficLED *led)
+{
+	HAL_GPIO_WritePin(LED1_RED_GPIO_Port, LED1_RED_Pin, RESET);
+	HAL_GPIO_WritePin(LED1_YELLOW_GPIO_Port, LED1_YELLOW_Pin, SET);
+	HAL_GPIO_WritePin(LED1_GREEN_GPIO_Port, LED1_GREEN_Pin, SET);
+	led->state = RED;
+	led->timeLeft = 5;
+}
 
+/**
+ * @brief  Turn the LED1 to YELLOW
+ */
+void turnYellow1(TrafficLED *led)
+{
+	HAL_GPIO_WritePin(LED1_RED_GPIO_Port, LED1_RED_Pin, SET);
+	HAL_GPIO_WritePin(LED1_YELLOW_GPIO_Port, LED1_YELLOW_Pin, RESET);
+	HAL_GPIO_WritePin(LED1_GREEN_GPIO_Port, LED1_GREEN_Pin, SET);
+	led->state = YELLOW;
+	led->timeLeft = 2;
+}
+
+/**
+ * @brief  Turn the LED1 to GREEN
+ */
+void turnGreen1(TrafficLED *led)
+{
+	HAL_GPIO_WritePin(LED1_RED_GPIO_Port, LED1_RED_Pin, SET);
+	HAL_GPIO_WritePin(LED1_YELLOW_GPIO_Port, LED1_YELLOW_Pin, SET);
+	HAL_GPIO_WritePin(LED1_GREEN_GPIO_Port, LED1_GREEN_Pin, RESET);
+	led->state = GREEN;
+	led->timeLeft = 3;
+}
+
+/**
+ * @brief  Turn the LED2 to RED
+ */
+void turnRed2(TrafficLED *led)
+{
+	HAL_GPIO_WritePin(LED2_RED_GPIO_Port, LED2_RED_Pin, RESET);
+	HAL_GPIO_WritePin(LED2_YELLOW_GPIO_Port, LED2_YELLOW_Pin, SET);
+	HAL_GPIO_WritePin(LED2_GREEN_GPIO_Port, LED2_GREEN_Pin, SET);
+	led->state = RED;
+	led->timeLeft = 5;
+}
+
+/**
+ * @brief  Turn the LED2 to YELLOW
+ */
+void turnYellow2(TrafficLED *led)
+{
+	HAL_GPIO_WritePin(LED2_RED_GPIO_Port, LED2_RED_Pin, SET);
+	HAL_GPIO_WritePin(LED2_YELLOW_GPIO_Port, LED2_YELLOW_Pin, RESET);
+	HAL_GPIO_WritePin(LED2_GREEN_GPIO_Port, LED2_GREEN_Pin, SET);
+	led->state = YELLOW;
+	led->timeLeft = 2;
+}
+
+/**
+ * @brief  Turn the LED2 to GREEN
+ */
+void turnGreen2(TrafficLED *led)
+{
+	HAL_GPIO_WritePin(LED2_RED_GPIO_Port, LED2_RED_Pin, SET);
+	HAL_GPIO_WritePin(LED2_YELLOW_GPIO_Port, LED2_YELLOW_Pin, SET);
+	HAL_GPIO_WritePin(LED2_GREEN_GPIO_Port, LED2_GREEN_Pin, RESET);
+	led->state = GREEN;
+	led->timeLeft = 3;
+}
 /* USER CODE END 0 */
 
 /**
@@ -85,27 +162,55 @@ int main(void)
 	/* Initialize all configured peripherals */
 	MX_GPIO_Init();
 	/* USER CODE BEGIN 2 */
+	TrafficLED led1;
+	TrafficLED led2;
+	turnRed1(&led1);
+	turnGreen2(&led2);
 	/* USER CODE END 2 */
 
 	/* Infinite loop */
 	/* USER CODE BEGIN WHILE */
 	while (1)
 	{
-		// turn red on and wait 5s
-		HAL_GPIO_WritePin(LED_RED_GPIO_Port, LED_RED_Pin, RESET);
-		HAL_GPIO_WritePin(LED_YELLOW_GPIO_Port, LED_YELLOW_Pin, SET);
-		HAL_GPIO_WritePin(LED_GREEN_GPIO_Port, LED_GREEN_Pin, SET);
-		HAL_Delay(5000);
-		// turn yellow on and wait 2s
-		HAL_GPIO_WritePin(LED_RED_GPIO_Port, LED_RED_Pin, SET);
-		HAL_GPIO_WritePin(LED_YELLOW_GPIO_Port, LED_YELLOW_Pin, RESET);
-		HAL_GPIO_WritePin(LED_GREEN_GPIO_Port, LED_GREEN_Pin, SET);
-		HAL_Delay(2000);
-		// turn green on and wait 3s
-		HAL_GPIO_WritePin(LED_RED_GPIO_Port, LED_RED_Pin, SET);
-		HAL_GPIO_WritePin(LED_YELLOW_GPIO_Port, LED_YELLOW_Pin, SET);
-		HAL_GPIO_WritePin(LED_GREEN_GPIO_Port, LED_GREEN_Pin, RESET);
-		HAL_Delay(3000);
+		HAL_Delay(1000);
+		led1.timeLeft--;
+		led2.timeLeft--;
+
+		if (led1.timeLeft <= 0)
+		{
+			switch (led1.state)
+			{
+				case RED:
+					turnGreen1(&led1);
+					break;
+				case GREEN:
+					turnYellow1(&led1);
+					break;
+				case YELLOW:
+					turnRed1(&led1);
+					break;
+				default:
+					;
+			}
+		}
+
+		if (led2.timeLeft <= 0)
+		{
+			switch (led2.state)
+			{
+				case RED:
+					turnGreen1(&led2);
+					break;
+				case GREEN:
+					turnYellow1(&led2);
+					break;
+				case YELLOW:
+					turnRed1(&led2);
+					break;
+				default:
+					;
+			}
+		}
 		/* USER CODE END WHILE */
 
 		/* USER CODE BEGIN 3 */
@@ -165,15 +270,24 @@ static void MX_GPIO_Init(void)
 	__HAL_RCC_GPIOA_CLK_ENABLE();
 
 	/*Configure GPIO pin Output Level */
-	HAL_GPIO_WritePin(GPIOA, LED_RED_Pin | LED_YELLOW_Pin | LED_GREEN_Pin,
-			GPIO_PIN_RESET);
+	HAL_GPIO_WritePin(GPIOA,
+			LED1_RED_Pin | LED1_YELLOW_Pin | LED1_GREEN_Pin | LED2_RED_Pin
+					| LED2_GREEN_Pin, GPIO_PIN_RESET);
 
-	/*Configure GPIO pins : LED_RED_Pin LED_YELLOW_Pin LED_GREEN_Pin */
-	GPIO_InitStruct.Pin = LED_RED_Pin | LED_YELLOW_Pin | LED_GREEN_Pin;
+	/*Configure GPIO pins : LED1_RED_Pin LED1_YELLOW_Pin LED1_GREEN_Pin LED2_RED_Pin
+	 LED2_GREEN_Pin */
+	GPIO_InitStruct.Pin = LED1_RED_Pin | LED1_YELLOW_Pin | LED1_GREEN_Pin
+			| LED2_RED_Pin | LED2_GREEN_Pin;
 	GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
 	GPIO_InitStruct.Pull = GPIO_NOPULL;
 	GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
 	HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+
+	/*Configure GPIO pin : LED2_YELLOW_Pin */
+	GPIO_InitStruct.Pin = LED2_YELLOW_Pin;
+	GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+	GPIO_InitStruct.Pull = GPIO_NOPULL;
+	HAL_GPIO_Init(LED2_YELLOW_GPIO_Port, &GPIO_InitStruct);
 
 }
 
