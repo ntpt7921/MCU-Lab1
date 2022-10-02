@@ -71,6 +71,16 @@ void setNumberOnClock(int num)
 
 	HAL_GPIO_WritePin(GPIOA, led_array[num], GPIO_PIN_SET);
 }
+
+void clearNumberOnClock(int num)
+{
+	if (num < 0)
+		return;
+	else if (num > 11)
+		return;
+
+	HAL_GPIO_WritePin(GPIOA, led_array[num], GPIO_PIN_RESET);
+}
 /* USER CODE END 0 */
 
 /**
