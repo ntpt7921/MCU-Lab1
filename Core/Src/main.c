@@ -41,6 +41,11 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
+uint16_t led_array[12] =
+{ LED_0_Pin, LED_1_Pin, LED_2_Pin,
+LED_3_Pin, LED_4_Pin, LED_5_Pin,
+LED_6_Pin, LED_7_Pin, LED_8_Pin,
+LED_9_Pin, LED_A_Pin, LED_B_Pin, };
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -54,7 +59,17 @@ static void MX_GPIO_Init(void);
 /* USER CODE BEGIN 0 */
 void clearAllBlock()
 {
-	GPIOA->BRR = (uint32_t)0xFFFF;
+	GPIOA->BRR = (uint32_t) 0xFFFF;
+}
+
+void setNumberOnClock(int num)
+{
+	if (num < 0)
+		return;
+	else if (num > 11)
+		return;
+
+	HAL_GPIO_WritePin(GPIOA, led_array[num], GPIO_PIN_SET);
 }
 /* USER CODE END 0 */
 
@@ -87,11 +102,6 @@ int main(void)
 	/* Initialize all configured peripherals */
 	MX_GPIO_Init();
 	/* USER CODE BEGIN 2 */
-	uint16_t led_array[12] =
-	{ LED_0_Pin, LED_1_Pin, LED_2_Pin,
-	LED_3_Pin, LED_4_Pin, LED_5_Pin,
-	LED_6_Pin, LED_7_Pin, LED_8_Pin,
-	LED_9_Pin, LED_A_Pin, LED_B_Pin, };
 	/* USER CODE END 2 */
 
 	/* Infinite loop */
@@ -105,7 +115,8 @@ int main(void)
 		/* USER CODE BEGIN 3 */
 		if (count >= 11)
 			count = 0;
-		else count++;
+		else
+			count++;
 	}
 	/* USER CODE END 3 */
 }
