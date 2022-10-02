@@ -52,6 +52,10 @@ static void MX_GPIO_Init(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
+void clearAllBlock()
+{
+	GPIOA->BRR = (uint32_t)0xFFFF;
+}
 /* USER CODE END 0 */
 
 /**
