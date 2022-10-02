@@ -38,6 +38,23 @@ typedef struct
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
+/* this is a set of bit, representing the pattern of 7seg LED for each number
+ * arranged as follow:
+ * 0b	0	0	0	0	0	0	0
+ *  	g	f	e	d	c	b	a
+ */
+
+#define PATTERN_0 (~((uint8_t)0b0111111))
+#define PATTERN_1 (~((uint8_t)0b0000110))
+#define PATTERN_2 (~((uint8_t)0b1011011))
+#define PATTERN_3 (~((uint8_t)0b1001111))
+#define PATTERN_4 (~((uint8_t)0b1100110))
+#define PATTERN_5 (~((uint8_t)0b1101101))
+#define PATTERN_6 (~((uint8_t)0b1111101))
+#define PATTERN_7 (~((uint8_t)0b0000111))
+#define PATTERN_8 (~((uint8_t)0b1111111))
+#define PATTERN_9 (~((uint8_t)0b1101111))
+#define PATTERN_E (~((uint8_t)0b1111001))
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -54,12 +71,64 @@ typedef struct
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
+void display7SEG(int counter);
 /* USER CODE BEGIN PFP */
 
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
+void display7SEG(int counter)
+{
+	switch(counter)
+	{
+		case 0:
+			GPIOA->BSRR = PATTERN_0;
+			GPIOA->BSRR = (~(uint32_t)PATTERN_0) << 16u;
+			break;
+		case 1:
+			GPIOA->BSRR = PATTERN_1;
+			GPIOA->BSRR = (~(uint32_t)PATTERN_1) << 16u;
+			break;
+		case 2:
+			GPIOA->BSRR = PATTERN_2;
+			GPIOA->BSRR = (~(uint32_t)PATTERN_2) << 16u;
+			break;
+		case 3:
+			GPIOA->BSRR = PATTERN_3;
+			GPIOA->BSRR = (~(uint32_t)PATTERN_3) << 16u;
+			break;
+		case 4:
+			GPIOA->BSRR = PATTERN_4;
+			GPIOA->BSRR = (~(uint32_t)PATTERN_4) << 16u;
+			break;
+		case 5:
+			GPIOA->BSRR = PATTERN_5;
+			GPIOA->BSRR = (~(uint32_t)PATTERN_5) << 16u;
+			break;
+		case 6:
+			GPIOA->BSRR = PATTERN_6;
+			GPIOA->BSRR = (~(uint32_t)PATTERN_6) << 16u;
+			break;
+		case 7:
+			GPIOA->BSRR = PATTERN_7;
+			GPIOA->BSRR = (~(uint32_t)PATTERN_7) << 16u;
+			break;
+		case 8:
+			GPIOA->BSRR = PATTERN_8;
+			GPIOA->BSRR = (~(uint32_t)PATTERN_8) << 16u;
+			break;
+		case 9:
+			GPIOA->BSRR = PATTERN_9;
+			GPIOA->BSRR = (~(uint32_t)PATTERN_9) << 16u;
+			break;
+		default:
+			GPIOA->BSRR = PATTERN_E;
+			GPIOA->BSRR = (~(uint32_t)PATTERN_E) << 16u;
+			break;
+	}
+}
+
 /**
  * @brief  Turn the LED1 to RED
  */
@@ -166,6 +235,7 @@ int main(void)
 	TrafficLED led2;
 	turnRed1(&led1);
 	turnGreen2(&led2);
+	display7SEG(led1.timeLeft);
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -175,6 +245,7 @@ int main(void)
 		HAL_Delay(1000);
 		led1.timeLeft--;
 		led2.timeLeft--;
+		display7SEG(led1.timeLeft);
 
 		if (led1.timeLeft <= 0)
 		{
@@ -265,19 +336,39 @@ static void MX_GPIO_Init(void)
 
   /* GPIO Ports Clock Enable */
   __HAL_RCC_GPIOA_CLK_ENABLE();
+  __HAL_RCC_GPIOB_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOA, LED1_RED_Pin|LED1_YELLOW_Pin|LED1_GREEN_Pin|LED2_RED_Pin
-                          |LED2_YELLOW_Pin|LED2_GREEN_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_0|GPIO_PIN_1|GPIO_PIN_2|GPIO_PIN_3
+                          |GPIO_PIN_4|GPIO_PIN_5|LED2_RED_Pin|LED2_YELLOW_Pin
+                          |LED2_GREEN_Pin, GPIO_PIN_RESET);
 
-  /*Configure GPIO pins : LED1_RED_Pin LED1_YELLOW_Pin LED1_GREEN_Pin LED2_RED_Pin
-                           LED2_YELLOW_Pin LED2_GREEN_Pin */
-  GPIO_InitStruct.Pin = LED1_RED_Pin|LED1_YELLOW_Pin|LED1_GREEN_Pin|LED2_RED_Pin
-                          |LED2_YELLOW_Pin|LED2_GREEN_Pin;
+  /*Configure GPIO pin Output Level */
+  HAL_GPIO_WritePin(GPIOB, LED1_RED_Pin|LED1_YELLOW_Pin|LED1_GREEN_Pin, GPIO_PIN_RESET);
+
+  /*Configure GPIO pins : PA0 PA1 PA2 PA3
+                           PA4 PA5 LED2_RED_Pin LED2_YELLOW_Pin
+                           LED2_GREEN_Pin */
+  GPIO_InitStruct.Pin = GPIO_PIN_0|GPIO_PIN_1|GPIO_PIN_2|GPIO_PIN_3
+                          |GPIO_PIN_4|GPIO_PIN_5|LED2_RED_Pin|LED2_YELLOW_Pin
+                          |LED2_GREEN_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+
+  /*Configure GPIO pin : PA6 */
+  GPIO_InitStruct.Pin = GPIO_PIN_6;
+  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+
+  /*Configure GPIO pins : LED1_RED_Pin LED1_YELLOW_Pin LED1_GREEN_Pin */
+  GPIO_InitStruct.Pin = LED1_RED_Pin|LED1_YELLOW_Pin|LED1_GREEN_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
 }
 
