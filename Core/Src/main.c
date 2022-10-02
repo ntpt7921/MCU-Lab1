@@ -38,17 +38,17 @@
  *  	g	f	e	d	c	b	a
  */
 
-#define PATTERN_0 ((uint8_t)0b0111111)
-#define PATTERN_1 ((uint8_t)0b0000110)
-#define PATTERN_2 ((uint8_t)0b1011011)
-#define PATTERN_3 ((uint8_t)0b1001111)
-#define PATTERN_4 ((uint8_t)0b1100110)
-#define PATTERN_5 ((uint8_t)0b1101101)
-#define PATTERN_6 ((uint8_t)0b1111101)
-#define PATTERN_7 ((uint8_t)0b0000111)
-#define PATTERN_8 ((uint8_t)0b1111111)
-#define PATTERN_9 ((uint8_t)0b1101111)
-#define PATTERN_E ((uint8_t)0b1111001)
+#define PATTERN_0 (~((uint8_t)0b0111111))
+#define PATTERN_1 (~((uint8_t)0b0000110))
+#define PATTERN_2 (~((uint8_t)0b1011011))
+#define PATTERN_3 (~((uint8_t)0b1001111))
+#define PATTERN_4 (~((uint8_t)0b1100110))
+#define PATTERN_5 (~((uint8_t)0b1101101))
+#define PATTERN_6 (~((uint8_t)0b1111101))
+#define PATTERN_7 (~((uint8_t)0b0000111))
+#define PATTERN_8 (~((uint8_t)0b1111111))
+#define PATTERN_9 (~((uint8_t)0b1101111))
+#define PATTERN_E (~((uint8_t)0b1111001))
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
