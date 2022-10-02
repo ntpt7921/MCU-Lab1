@@ -46,6 +46,13 @@ uint16_t led_array[12] =
 LED_3_Pin, LED_4_Pin, LED_5_Pin,
 LED_6_Pin, LED_7_Pin, LED_8_Pin,
 LED_9_Pin, LED_A_Pin, LED_B_Pin, };
+
+typedef struct ClockData
+{
+	uint8_t sec;
+	uint8_t min;
+	uint8_t hour;
+} ClockData;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -59,7 +66,7 @@ static void MX_GPIO_Init(void);
 /* USER CODE BEGIN 0 */
 void clearAllBlock()
 {
-	GPIOA->BRR = (uint32_t) 0xFFFF;
+	GPIOA->BSRR = (uint32_t) 0xFFFF;
 }
 
 void setNumberOnClock(int num)
@@ -69,7 +76,7 @@ void setNumberOnClock(int num)
 	else if (num > 11)
 		return;
 
-	HAL_GPIO_WritePin(GPIOA, led_array[num], GPIO_PIN_SET);
+	HAL_GPIO_WritePin(GPIOA, led_array[num], GPIO_PIN_RESET);
 }
 
 void clearNumberOnClock(int num)
@@ -79,7 +86,37 @@ void clearNumberOnClock(int num)
 	else if (num > 11)
 		return;
 
-	HAL_GPIO_WritePin(GPIOA, led_array[num], GPIO_PIN_RESET);
+	HAL_GPIO_WritePin(GPIOA, led_array[num], GPIO_PIN_SET);
+}
+
+void increment_time(ClockData *current)
+{
+	current->sec++;
+	if (current->sec >= 60)
+	{
+		current->sec = 0;
+		current->min++;
+	}
+	if (current->min >= 60)
+	{
+		current->min = 0;
+		current->hour++;
+	}
+	if (current->hour >= 24)
+	{
+		current->hour = 0;
+	}
+}
+
+void display_time(ClockData *curr)
+{
+	int secLED = curr->sec / 5;
+	int minLED = curr->min / 5;
+	int hourLED = curr->hour % 12;
+	clearAllBlock();
+	setNumberOnClock(secLED);
+	setNumberOnClock(minLED);
+	setNumberOnClock(hourLED);
 }
 /* USER CODE END 0 */
 
@@ -112,21 +149,16 @@ int main(void)
 	/* Initialize all configured peripherals */
 	MX_GPIO_Init();
 	/* USER CODE BEGIN 2 */
+	ClockData current_time = { 30, 27, 11 }; // set current time to 11:27:30
 	/* USER CODE END 2 */
 
 	/* Infinite loop */
 	/* USER CODE BEGIN WHILE */
-	int count = 0;
 	while (1)
 	{
-		HAL_GPIO_TogglePin(GPIOA, led_array[count]);
-		/* USER CODE END WHILE */
-
-		/* USER CODE BEGIN 3 */
-		if (count >= 11)
-			count = 0;
-		else
-			count++;
+		HAL_Delay(1000);
+		increment_time(&current_time);
+		display_time(&current_time);
 	}
 	/* USER CODE END 3 */
 }
