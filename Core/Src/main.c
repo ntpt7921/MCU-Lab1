@@ -102,6 +102,8 @@ int main(void)
 		if (count >= 11)
 			count = 0;
 		else count++;
+
+		HAL_Delay(1000);
 	}
 	/* USER CODE END 3 */
 }
